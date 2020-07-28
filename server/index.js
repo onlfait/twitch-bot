@@ -5,7 +5,7 @@ const socket = require("socket.io");
 const twitchMiddleware = require("./twitch/twitchMiddleware");
 const chatClient = require("./twitch/chatClient");
 
-const { isDev, port, clientPath, publicPath } = require("./config");
+const { port, clientPath, publicPath } = require("./config");
 
 const app = express();
 const server = Server(app);
@@ -15,16 +15,11 @@ const channel = "fablab_onlfait";
 
 const twitchClient = require("./twitch/client")({
   clientId: "3ydnn6uit4578idry67vudwxhyo4zi",
-  redirectURI: `http://localhost:${port}`,
+  redirectURI: `http://localhost:${port}/main`,
   io,
 });
 
-if (isDev) {
-  require("./devMiddleware")(app);
-} else {
-  app.use(express.static(clientPath));
-}
-
+app.use(express.static(clientPath));
 app.use(express.static(publicPath));
 
 server.listen(port, async () => {

@@ -1,0 +1,23 @@
+.user-picture {
+  width: 200px;
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+}
+
+.user-picture img {
+  width: 200px;
+  height: 200px;
+}
+
+.user-picture .nick {
+  color: #fff;
+  padding: 8px;
+  font-size: 24px;
+  text-align: center;
+  background-color: #242424;
+  border-radius: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

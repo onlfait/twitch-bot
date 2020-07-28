@@ -1,14 +1,19 @@
-const { HotModuleReplacementPlugin } = require("webpack");
+// const { HotModuleReplacementPlugin } = require("webpack");
 
 module.exports = function devMiddleware(app) {
   const webpack = require("webpack");
   const webpackConfig = require("../webpack.config.js");
 
-  webpackConfig.entry.app.unshift(
-    "webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000&reload=true"
+  webpackConfig[0].entry.unshift(
+    "webpack-hot-middleware/client?path=/main/__webpack_hmr&timeout=20000&reload=true"
   );
 
-  webpackConfig.plugins.push(new HotModuleReplacementPlugin());
+  webpackConfig[1].entry.unshift(
+    "webpack-hot-middleware/client?path=/overlay/__webpack_hmr&timeout=20000&reload=true"
+  );
+
+  // webpackConfig[0].plugins.push(new HotModuleReplacementPlugin());
+  // webpackConfig[1].plugins.push(new HotModuleReplacementPlugin());
 
   const webpackCompiler = webpack(webpackConfig);
 
