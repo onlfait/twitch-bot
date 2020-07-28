@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Overlay</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <style media="screen">
+      .user-picture {
+        width: 200px;
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+      }
+
+      .user-picture img {
+        width: 200px;
+        height: 200px;
+      }
+
+      .user-picture .nick {
+        color: #fff;
+        padding: 8px;
+        font-size: 24px;
+        text-align: center;
+        background-color: #242424;
+        border-radius: 4px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    </style>
+  </head>
+  <body>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      var socket = io();
+
+      function getRandomInt(max) {
+        return Math.floor(Math.random() * Math.floor(max));
+      }
+
+      function animate({ element, speed }) {
+        if (!element.dataset.running) {
+          return;
+        }
+
+        let x = parseInt(element.style.left || 0);
+        let y = parseInt(element.style.top || 0);
+
+        let left = x + speed.x;
+        let top = y + speed.y;
+
+        if (left < 0 || left + 200 > window.screen.width) {
+          speed.x = -speed.x;
+          speed.y = getRandomInt(15);
+        }
+
+        if (top < 0 || top + 200 > window.screen.height) {
+          speed.x = getRandomInt(15);
+          speed.y = -speed.y;
+        }
+
+        element.style.top = `${top}px`;
+        element.style.left = `${left}px`;
+
+        requestAnimationFrame(() => animate({ element, speed }));
+      }
+
+      socket.on("plugin.welcome.show.picture", ({ nick, url }) => {
+        const element = document.createElement("div");
+        const nickname = document.createElement("span");
+        const img = document.createElement("img");
+
+        img.setAttribute("src", url);
+
+        element.classList.add("user-picture");
+        element.classList.add(`user-nick-${nick}`);
+        nickname.classList.add("nick");
+        nickname.innerText = nick;
+
+        element.append(img);
+        element.append(nickname);
+        document.body.append(element);
+
+        element.dataset.running = true;
+
+        requestAnimationFrame(() => animate({ element, speed: { x: 15, y: 0 } }));
+
+        setTimeout(() => {
+          element.dataset.running = false;
+          element.remove();
+        }, 1000 * 15);
+      });
+    </script>
+  </body>
+</html>

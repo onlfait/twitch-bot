@@ -1,0 +1,35 @@
+{
+  "license": "MIT",
+  "version": "1.0.0",
+  "name": "express-server",
+  "description": "Express (dev) server",
+  "author": "skarab42 <skarab42@users.noreply.github.com>",
+  "scripts": {
+    "serve": "cross-env NODE_ENV=development nodemon server/index.js --watch server",
+    "dist": "cross-env NODE_ENV=production webpack --config webpack.config.js",
+    "start": "cross-env NODE_ENV=production node server/index.js",
+    "lint": "eslint --fix server/** client-src/**"
+  },
+  "devDependencies": {
+    "chalk": "^4.1.0",
+    "cross-env": "^7.0.2",
+    "eslint": "^7.2.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-html": "^6.0.2",
+    "eslint-plugin-prettier": "^3.1.4",
+    "html-webpack-plugin": "^4.3.0",
+    "nodemon": "^2.0.4",
+    "prettier": "^2.0.5",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.11",
+    "webpack-dev-middleware": "^3.7.2",
+    "webpack-hot-middleware": "^2.25.0"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "query-string": "^6.13.1",
+    "socket.io": "^2.3.0",
+    "twitch": "^4.0.10",
+    "twitch-chat-client": "^4.0.10"
+  }
+}
