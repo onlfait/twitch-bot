@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "express": "^4.17.1",
+    "open": "^7.1.0",
     "query-string": "^6.13.1",
     "socket.io": "^2.3.0",
     "twitch": "^4.0.10",

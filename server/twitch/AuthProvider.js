@@ -1,4 +1,5 @@
 const { AccessToken } = require("twitch");
+const open = require("open");
 
 const authBaseURL = "https://id.twitch.tv/oauth2/authorize?response_type=token";
 
@@ -67,11 +68,7 @@ module.exports = class AuthProvider {
         return;
       }
 
-      const url = this.getAuthUrl(scopes);
-
-      this.io.emit("twitch.auth.redirect", url);
-
-      console.log(`>>> Twitch Auth required at\n\t${url}`);
+      open(this.getAuthUrl(scopes));
 
       this.__onAuthError = (message) => {
         reject(message);
