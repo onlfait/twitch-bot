@@ -5,7 +5,7 @@ const socket = require("socket.io");
 const twitchMiddleware = require("./twitch/twitchMiddleware");
 const chatClient = require("./twitch/chatClient");
 
-const { port, clientPath, publicPath } = require("./config");
+const { isDev, port, clientPath, publicPath } = require("./config");
 
 const app = express();
 const server = Server(app);
@@ -19,7 +19,13 @@ const twitchClient = require("./twitch/client")({
   io,
 });
 
-app.use(express.static(clientPath));
+if (isDev) {
+  require("./devMiddleware")(app);
+} else {
+  app.use(express.static(clientPath));
+}
+
+// app.use(express.static(clientPath));
 app.use(express.static(publicPath));
 
 server.listen(port, async () => {

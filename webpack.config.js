@@ -12,6 +12,7 @@ function createConfig(entry) {
     entry: [path.resolve(__dirname, "client-src", entry, "index.js")],
     output: {
       filename: "index.js",
+      publicPath: `/${entry}`,
       path: path.resolve(__dirname, "client-dist", entry),
     },
     plugins: [

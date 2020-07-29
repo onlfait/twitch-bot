@@ -1,28 +1,32 @@
-// const { HotModuleReplacementPlugin } = require("webpack");
+const webpack = require("webpack");
+const webpackConfig = require("../webpack.config");
+const { HotModuleReplacementPlugin } = require("webpack");
 
-module.exports = function devMiddleware(app) {
-  const webpack = require("webpack");
-  const webpackConfig = require("../webpack.config.js");
+function configEntry({ app, config }) {
+  const path = config.output.publicPath;
 
-  webpackConfig[0].entry.unshift(
-    "webpack-hot-middleware/client?path=/main/__webpack_hmr&timeout=20000&reload=true"
+  config.entry.unshift(
+    `webpack-hot-middleware/client?path=${path}/__webpack_hmr&timeout=20000&reload=true`
   );
 
-  webpackConfig[1].entry.unshift(
-    "webpack-hot-middleware/client?path=/overlay/__webpack_hmr&timeout=20000&reload=true"
+  config.plugins.push(new HotModuleReplacementPlugin());
+
+  const webpackCompiler = webpack(config);
+
+  app.use(
+    require("webpack-dev-middleware")(webpackCompiler, {
+      publicPath: path,
+    })
   );
-
-  // webpackConfig[0].plugins.push(new HotModuleReplacementPlugin());
-  // webpackConfig[1].plugins.push(new HotModuleReplacementPlugin());
-
-  const webpackCompiler = webpack(webpackConfig);
-
-  app.use(require("webpack-dev-middleware")(webpackCompiler));
 
   app.use(
     require("webpack-hot-middleware")(webpackCompiler, {
-      path: "/__webpack_hmr",
+      path: `${path}/__webpack_hmr`,
       heartbeat: 1000,
     })
   );
+}
+
+module.exports = function devMiddleware(app) {
+  webpackConfig.forEach((config) => configEntry({ app, config }));
 };
