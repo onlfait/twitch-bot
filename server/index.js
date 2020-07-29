@@ -25,7 +25,6 @@ if (isDev) {
   app.use(express.static(clientPath));
 }
 
-// app.use(express.static(clientPath));
 app.use(express.static(publicPath));
 
 server.listen(port, async () => {
