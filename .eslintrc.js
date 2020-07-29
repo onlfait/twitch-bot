@@ -10,6 +10,7 @@ module.exports = {
   },
   globals: {
     io: true,
+    Twitch: true,
   },
   plugins: ["html", "prettier"],
   extends: ["eslint:recommended", "plugin:prettier/recommended", "prettier"],
