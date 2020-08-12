@@ -27,9 +27,12 @@
     "webpack-hot-middleware": "^2.25.0"
   },
   "dependencies": {
+    "axios": "^0.19.2",
+    "conf": "^7.1.1",
     "express": "^4.17.1",
     "open": "^7.1.0",
     "query-string": "^6.13.1",
+    "say": "^0.16.0",
     "socket.io": "^2.3.0",
     "twitch": "^4.0.10",
     "twitch-chat-client": "^4.0.10"

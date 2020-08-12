@@ -41,5 +41,7 @@ io.on("connection", (socket) => {
     chat.use(require("./modules/cliChat"));
     chat.use(require("./modules/helloWorld"));
     chat.use(require("./modules/welcome"));
+    chat.use(require("./modules/cmd"));
+    chat.use(require("./modules/tts"));
   }
 });

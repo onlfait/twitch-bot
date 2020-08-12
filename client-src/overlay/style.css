@@ -21,3 +21,15 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.video-title {
+  width: 400px;
+  height: 400px;
+  position: absolute;
+  font-weight: 700;
+  font-size: 42px;
+  color: black;
+  -webkit-text-fill-color: white;
+  -webkit-text-stroke-width: 1px;
+  -webkit-text-stroke-color: black;
+}

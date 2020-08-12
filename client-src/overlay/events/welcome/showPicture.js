@@ -1,33 +1,4 @@
-function getRandomInt(max) {
-  return Math.floor(Math.random() * Math.floor(max));
-}
-
-function animate({ element, speed }) {
-  if (!element.dataset.running) {
-    return;
-  }
-
-  let x = parseInt(element.style.left || 0);
-  let y = parseInt(element.style.top || 0);
-
-  let left = x + speed.x;
-  let top = y + speed.y;
-
-  if (left < 0 || left + 200 > window.screen.width) {
-    speed.x = -speed.x;
-    speed.y = getRandomInt(15);
-  }
-
-  if (top < 0 || top + 200 > window.screen.height) {
-    speed.x = getRandomInt(15);
-    speed.y = -speed.y;
-  }
-
-  element.style.top = `${top}px`;
-  element.style.left = `${left}px`;
-
-  requestAnimationFrame(() => animate({ element, speed }));
-}
+import animate from "./animate";
 
 export default function showPicture({ nick, url }) {
   const element = document.createElement("div");
@@ -47,10 +18,9 @@ export default function showPicture({ nick, url }) {
 
   element.dataset.running = true;
 
-  requestAnimationFrame(() => animate({ element, speed: { x: 15, y: 0 } }));
+  animate({ element, speed: { x: 15, y: 0 } });
 
   setTimeout(() => {
     element.dataset.running = false;
-    element.remove();
-  }, 1000 * 15);
+  }, 1000 * 5);
 }
