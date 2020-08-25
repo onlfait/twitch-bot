@@ -11,8 +11,7 @@ module.exports = () => ({
         client.say(channel, line);
       });
   },
-  onMessage({ args }) {
-    const { message, msg } = args;
+  onMessage({ message, msg }) {
     const color = msg._tags.get("color");
     const nick = msg._tags.get("display-name");
     console.log(chalk.hex(color)(`[${nick}]`), message);

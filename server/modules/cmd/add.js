@@ -1,18 +1,16 @@
-const store = require("../store");
+const store = require("../../store");
 
 const types = ["text"];
 const allowedUsers = ["fablab_onlfait"];
 
-module.exports = ({ client, args }, { params }) => {
-  const commands = store.get("commands", {});
-  const { channel, user } = args;
+module.exports = ({ client, channel, user, command }) => {
+  console.log({ channel, user, command });
 
   if (!allowedUsers.includes(user)) {
     return;
   }
 
-  const [type, name, ...words] = params;
-  const value = words.join(" ");
+  const [type, name, value] = command.args;
 
   if (!types.includes(type)) {
     client.say(channel, `La type de commande "${type}" est invalide.`);
@@ -24,15 +22,15 @@ module.exports = ({ client, args }, { params }) => {
     return;
   }
 
-  if (commands[name]) {
+  const commands = store.get("commands", {});
+  const commandObject = commands[name];
+
+  if (commandObject) {
     client.say(channel, `La commande "${name}" existe déjà.`);
     return;
   }
 
   commands[name] = { type, name, value };
+  console.log(">>>>>>>>>>>", commands);
   store.set("commands", commands);
-
-  console.log(commands);
-
-  return;
 };

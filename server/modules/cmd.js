@@ -1,34 +1,30 @@
-const addCommand = require("./cmd-add");
-const runCommand = require("./cmd-run");
+const add = require("./cmd/add");
+const store = require("../store");
+
+let commands = { add };
 
 module.exports = () => ({
-  async onMessage({ client, args }) {
-    const { message } = args;
+  async onCommand(args) {
+    const cmd = args.command.name;
 
-    if (message[0] !== "!") {
+    if (cmd === "cmd") {
+      const subcmd = args.command.args.shift();
+      const func = commands[subcmd];
+      func && func(args);
       return;
     }
 
-    const params = message.slice(1).split(" ");
-    const cmd = params.shift();
+    commands = store.get("commands", {});
+    const command = commands[cmd];
+    const { client, channel } = args;
 
-    if (cmd === "update") {
-      const axios = require("axios");
-      const store = require("../store");
-      const commands = store.get("commands", {});
-      axios({
-        method: "post",
-        url: "http://localhost/index.php",
-        data: "data=" + JSON.stringify(commands),
-      }).catch(function (error) {
-        console.log(">>>", { error });
-      });
+    if (!command) {
+      client.say(channel, `La commande "${cmd}" est inconnue.`);
+      return;
     }
 
-    if (cmd === "add") {
-      addCommand({ client, args }, { cmd, params });
-    } else {
-      runCommand({ client, args }, { cmd, params });
+    if (command.type === "text") {
+      client.say(channel, command.value);
     }
   },
 });

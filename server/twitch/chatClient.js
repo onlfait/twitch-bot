@@ -7,24 +7,20 @@ class ChatClientWrapper {
     this.channel = channel;
     this.plugins = new Set();
 
-    this.client.onPrivmsg((...argsArray) => {
-      const [channel, user, message, msg] = argsArray;
-      const args = { channel, user, message, msg };
-
+    this.client.onPrivmsg((channel, user, message, msg) => {
       let command = null;
 
       if (message[0] === "!") {
-        const argv = message.slice(1).split(" ");
-        const name = argv.shift();
-        command = { name, args: argv };
+        const args = message.slice(1).split(" ");
+        command = { name: args.shift(), args };
       }
+
+      const payload = { channel, user, message, msg, client, io };
 
       this.plugins.forEach((plugin) => {
         const { onMessage, onCommand } = plugin();
-        onMessage && onMessage({ channel, args, client, io });
-        onCommand &&
-          command &&
-          onCommand({ channel, args, command, client, io });
+        onMessage && onMessage(payload);
+        command && onCommand && onCommand({ ...payload, command });
       });
     });
   }

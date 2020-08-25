@@ -1,32 +1,23 @@
 const twitchClient = require("../twitch/client")();
+const sayMessage = require("./libs/sayMessage");
 const store = require("../store");
-const say = require("say");
-
-const pubDelay = 1000 * 60 * 30;
 
 module.exports = () => ({
-  async onMessage({ client, args, io }) {
-    const { user } = args;
-    const now = Date.now();
+  async onMessage({ client, user, channel, msg, io }) {
+    const users = store.get(`users`);
 
-    let storedUser = store.get(`users.${user}`);
-
-    if (!storedUser) {
-      storedUser = { lastSeen: now };
-      store.set(`users.${user}`, storedUser);
-    } else {
-      const diff = now - storedUser.lastSeen;
-      storedUser.lastSeen = now;
-      store.set(`users.${user}`, storedUser);
-      if (diff < pubDelay) return;
+    if (users.includes(user)) {
+      return;
     }
 
-    const { channel, msg } = args;
+    users.push(user);
+    store.set(`users`, users);
+
     const uid = msg._tags.get("user-id");
     const nick = msg._tags.get("display-name");
 
     client.say(channel, `Bienvenu.e à toi @${nick} fablabOnlfait`);
-    say.speak(`${nick} viens d'atterrir dans le chatte`);
+    sayMessage(`${nick} viens d'atterrir dans le tchatte`);
 
     let userInfo = await twitchClient.helix.users.getUserById(uid);
     const url = userInfo._data["profile_image_url"];

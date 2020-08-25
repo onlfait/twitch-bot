@@ -1,25 +1,9 @@
-const say = require("say");
+const sayMessage = require("./libs/sayMessage");
 
-const queue = [];
-let saying = false;
 const rewardId = "d4bc9cdb-4d94-43fb-bba2-154c3fc9b1a2";
 
-function sayMessage(message) {
-  if (saying) {
-    return queue.push(message);
-  }
-  saying = true;
-  say.speak(message, null, null, () => {
-    saying = false;
-    if (queue.length) {
-      sayMessage(queue.shift());
-    }
-  });
-}
-
 module.exports = () => ({
-  async onMessage({ args }) {
-    const { message, msg } = args;
+  async onMessage({ message, msg }) {
     const cri = msg._tags.get("custom-reward-id");
 
     if (cri && cri === rewardId) {
