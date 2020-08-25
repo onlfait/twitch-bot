@@ -1,5 +1,8 @@
 module.exports = () => ({
-  async onMessage({ args }) {
-    console.log("empty:", args);
+  async onMessage({ channel, user, message, msg, client, io, command } = {}) {
+    console.log("empty...");
+  },
+  async onCommand({ channel, user, message, msg, client, io, command } = {}) {
+    console.log("empty...");
   },
 });
