@@ -1,7 +1,5 @@
-const add = require("./cmd/add");
 const store = require("../store");
-
-let commands = { add };
+let commands = require("./cmd");
 
 module.exports = () => ({
   async onCommand(args) {

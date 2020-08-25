@@ -31,6 +31,5 @@ module.exports = ({ client, channel, user, command }) => {
   }
 
   commands[name] = { type, name, value };
-  console.log(">>>>>>>>>>>", commands);
   store.set("commands", commands);
 };
