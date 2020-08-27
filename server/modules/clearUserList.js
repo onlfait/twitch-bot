@@ -3,14 +3,9 @@ const store = require("../store");
 const alias = ["clearUserList", "cul"];
 
 module.exports = () => ({
-  async onCommand(args) {
-    const cmd = args.command.name;
-    const broadcaster = args.msg._tags.get("badges").includes("broadcaster");
-
-    if (!broadcaster || !alias.includes(cmd)) {
-      return;
+  async onCommand({ msg, command }) {
+    if (msg.isBroadcaster && alias.includes(command.name)) {
+      store.set("users", []);
     }
-
-    store.set("users", []);
   },
 });

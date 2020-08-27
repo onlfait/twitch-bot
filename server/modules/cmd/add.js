@@ -4,9 +4,7 @@ const types = ["text", "tts"];
 
 // !cmd add type name ...value
 module.exports = ({ client, channel, command, msg }) => {
-  const broadcaster = msg._tags.get("badges").includes("broadcaster");
-
-  if (!broadcaster) return;
+  if (!msg.isBroadcaster) return;
 
   let [type, name, ...value] = command.args;
 

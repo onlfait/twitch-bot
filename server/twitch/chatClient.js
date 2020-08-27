@@ -18,6 +18,8 @@ class ChatClientWrapper {
 
       const payload = { channel, user, message, msg, client, io };
 
+      msg.isBroadcaster = msg._tags.get("badges").includes("broadcaster");
+
       this.plugins.forEach((plugin) => {
         const { onMessage, onCommand } = plugin();
         onMessage && onMessage(payload);
