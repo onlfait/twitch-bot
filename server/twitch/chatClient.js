@@ -12,7 +12,8 @@ class ChatClientWrapper {
 
       if (message[0] === "!") {
         const args = message.slice(1).split(" ");
-        command = { name: args.shift(), args };
+        const rawArgs = args.slice(1).join(" ");
+        command = { name: args.shift(), args, rawArgs };
       }
 
       const payload = { channel, user, message, msg, client, io };

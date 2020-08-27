@@ -1,16 +1,16 @@
 const store = require("../../store");
 
-const types = ["text"];
-const allowedUsers = ["fablab_onlfait"];
+const types = ["text", "tts"];
 
-module.exports = ({ client, channel, user, command }) => {
-  console.log({ channel, user, command });
+// !cmd add type name ...value
+module.exports = ({ client, channel, command, msg }) => {
+  const broadcaster = msg._tags.get("badges").includes("broadcaster");
 
-  if (!allowedUsers.includes(user)) {
-    return;
-  }
+  if (!broadcaster) return;
 
-  const [type, name, value] = command.args;
+  let [type, name, ...value] = command.args;
+
+  value = value.join(" ");
 
   if (!types.includes(type)) {
     client.say(channel, `La type de commande "${type}" est invalide.`);
@@ -30,6 +30,6 @@ module.exports = ({ client, channel, user, command }) => {
     return;
   }
 
-  commands[name] = { type, name, value };
+  commands.push({ type, name, value });
   store.set("commands", commands);
 };
