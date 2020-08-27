@@ -16,7 +16,7 @@ module.exports = () => ({
     const uid = msg._tags.get("user-id");
     const nick = msg._tags.get("display-name");
 
-    client.say(channel, `Bienvenu.e à toi @${nick} fablabOnlfait`);
+    client.say(channel, `Bienvenue à toi @${nick} fablabOnlfait`);
     sayMessage(`${nick} viens d'atterrir dans le tchatte`);
 
     let userInfo = await twitchClient.helix.users.getUserById(uid);
