@@ -20,11 +20,18 @@ class ChatClientWrapper {
 
       msg.isBroadcaster = msg._tags.get("badges").includes("broadcaster");
 
+      let commandCatch = false;
+      let done = () => (commandCatch = true);
+
       this.plugins.forEach((plugin) => {
         const { onMessage, onCommand } = plugin();
         onMessage && onMessage(payload);
-        command && onCommand && onCommand({ ...payload, command });
+        command && onCommand && onCommand({ ...payload, command, done });
       });
+
+      if (command && !commandCatch) {
+        client.say(channel, `La commande "${command.name}" est inconnue.`);
+      }
     });
   }
 

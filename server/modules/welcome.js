@@ -1,5 +1,5 @@
 const twitchClient = require("../twitch/client")();
-const sayMessage = require("./libs/sayMessage");
+const sayMessage = require("../libs/sayMessage");
 const store = require("../store");
 
 module.exports = () => ({

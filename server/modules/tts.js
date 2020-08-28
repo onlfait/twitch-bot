@@ -1,4 +1,4 @@
-const sayMessage = require("./libs/sayMessage");
+const sayMessage = require("../libs/sayMessage");
 
 const rewardId = "d4bc9cdb-4d94-43fb-bba2-154c3fc9b1a2";
 

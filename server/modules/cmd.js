@@ -1,6 +1,6 @@
 const store = require("../store");
 const add = require("./cmd/add");
-const sayMessage = require("./libs/sayMessage");
+const sayMessage = require("../libs/sayMessage");
 
 const commands = { add };
 
@@ -14,22 +14,19 @@ module.exports = () => ({
       const subcmd = args.command.args.shift();
       const func = commands[subcmd];
       func && func(args);
+      args.done();
       return;
     }
 
     const { client, channel } = args;
     const commandList = store.get("commands", []).filter((c) => c.name === cmd);
 
-    if (!commandList.length) {
-      client.say(channel, `La commande "${cmd}" est inconnue.`);
-      return;
-    }
+    if (!commandList.length) return;
 
     commandList.forEach((command) => {
       const sep = args.command.rawArgs.includes(splitChar) ? splitChar : " ";
       const cmdArgs = args.command.rawArgs.split(sep);
 
-      console.log({ cmdArgs });
       const value = command.value.replace(/(\$[0-9])/g, (match, p1) => {
         return cmdArgs[p1[1]];
       });
@@ -42,5 +39,7 @@ module.exports = () => ({
         sayMessage(value);
       }
     });
+
+    args.done();
   },
 });

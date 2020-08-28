@@ -39,6 +39,7 @@ io.on("connection", (socket) => {
   if (!chat) {
     chat = chatClient({ twitchClient, channel, io });
     chat.use(require("./modules/clearUserList"));
+    chat.use(require("./modules/drawbot"));
     chat.use(require("./modules/cliChat"));
     chat.use(require("./modules/welcome"));
     chat.use(require("./modules/cmd"));
