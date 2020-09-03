@@ -1,6 +1,10 @@
 const { sendCommand } = require("../libs/smoothie");
-const move = require("./drawbot/move");
+
 const write = require("./drawbot/write");
+const move = require("./drawbot/move");
+const svg = require("./drawbot/svg");
+
+const store = require("../store");
 
 const F = "F10000";
 
@@ -15,30 +19,71 @@ const commands = {
   clear: () => sendCommand(`M999`),
   penup: () => sendCommand(`M4`),
   pendown: () => sendCommand(`M4 S5`),
+  resetLine: () => Promise.resolve(store.set("lineNumber", 1)),
   move,
   write,
+  svg,
 };
 
-module.exports = () => ({
-  onMessage(payload) {
-    const { msg } = payload;
-    const rewardId = msg._tags.get("custom-reward-id");
+const queue = [];
+let isPlaying = false;
 
-    if (!rewardId) return;
+function processQueue() {
+  isPlaying = false;
+  const [funcName, payload] = queue.shift() || [];
+  if (funcName === "onMessage") {
+    onMessage(payload);
+  } else if (funcName === "onCommand") {
+    onCommand(payload);
+  }
+}
 
-    const commandFunc = rewardCommands[rewardId];
+function onMessage(payload) {
+  const { msg } = payload;
+  const rewardId = msg._tags.get("custom-reward-id");
 
-    if (!commandFunc) return;
+  if (!rewardId) return;
 
-    commandFunc(payload);
-  },
-  onCommand(payload) {
-    const cmd = payload.command.name;
-    const commandFunc = commands[cmd];
+  const commandFunc = rewardCommands[rewardId];
 
-    if (!commandFunc || rewardCommandsValues.includes(cmd)) return;
+  if (!commandFunc) return;
 
-    commandFunc(payload);
-    payload.done();
-  },
-});
+  if (isPlaying) {
+    queue.push(["onMessage", payload]);
+    return;
+  }
+
+  isPlaying = true;
+
+  commandFunc(payload)
+    .then(processQueue)
+    .catch((error) => {
+      console.log("CMD ERROR:", error);
+      processQueue();
+    });
+}
+
+function onCommand(payload) {
+  const cmd = payload.command.name;
+  const commandFunc = commands[cmd];
+
+  if (!commandFunc || rewardCommandsValues.includes(cmd)) return;
+
+  payload.done();
+
+  if (isPlaying) {
+    queue.push(["onCommand", payload]);
+    return;
+  }
+
+  isPlaying = true;
+
+  commandFunc(payload)
+    .then(processQueue)
+    .catch((error) => {
+      console.log("CMD ERROR:", error);
+      processQueue();
+    });
+}
+
+module.exports = () => ({ onMessage, onCommand });
