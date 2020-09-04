@@ -31,4 +31,8 @@ function createConfig(entry) {
   };
 }
 
-module.exports = [createConfig("main"), createConfig("overlay")];
+module.exports = [
+  createConfig("main"),
+  createConfig("overlay"),
+  createConfig("question"),
+];

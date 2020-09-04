@@ -1,0 +1,40 @@
+body {
+  background-color: #483d68;
+}
+
+.question {
+  color: #eee;
+  padding: 8px;
+  display: flex;
+  font-size: 24px;
+  border-radius: 4px;
+  background-color: #4d7f9b;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.question:hover {
+  opacity: 0.5;
+}
+
+.question > span {
+  margin-right: 8px;
+}
+
+.time {
+  color: #ccc;
+}
+
+.nick {
+  color: #e0b233;
+}
+
+.delete {
+  position: absolute;
+  cursor: pointer;
+  right: 8px;
+}
+
+.delete:hover {
+  opacity: 0.5;
+}
