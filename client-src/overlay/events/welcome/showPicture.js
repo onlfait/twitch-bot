@@ -1,5 +1,7 @@
 import animate from "./animate";
 
+const timeout = 15; //s
+
 export default function showPicture({ nick, url }) {
   const element = document.createElement("div");
   const nickname = document.createElement("span");
@@ -22,5 +24,5 @@ export default function showPicture({ nick, url }) {
 
   setTimeout(() => {
     element.dataset.running = false;
-  }, 1000 * 5);
+  }, 1000 * timeout);
 }

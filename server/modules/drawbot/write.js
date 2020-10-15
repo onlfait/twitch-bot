@@ -4,24 +4,27 @@ const opentype = require("opentype.js");
 const store = require("../../store");
 const path = require("path");
 
+const { lineHeight, fontSize, fontName } = require("./config");
+const textFactory = require("./textFactory");
+
 const publicPath = path.join(__dirname, "../../../public");
 const fontPath = path.join(publicPath, "fonts");
 const outputFileName = "highlighted.gcode";
-const fontName = "deftone_stylus.ttf";
-const lineHeight = 50;
-const fontSize = 42;
 
 function textToGCODE({ lineNumber, font, message }) {
   const offset = lineHeight - fontSize;
   const yOffset = (fontSize + offset) * lineNumber;
-  const path = font.getPath(message, 0, yOffset, fontSize);
   const gcode = ["M4", "G28 X Y", "G90", "G0 F10000"];
+
+  const { paths, lineCount } = textFactory(font, message, yOffset, fontSize);
+  // console.log("newPath:", path);
 
   let [x, y] = [0, 0];
   let firstMove = null;
   let isPendown = false;
 
-  store.set("lineNumber", ++lineNumber);
+  lineNumber += lineCount;
+  store.set("lineNumber", lineNumber);
 
   const tf = (n) => parseFloat(n.toFixed(2));
 
@@ -39,54 +42,56 @@ function textToGCODE({ lineNumber, font, message }) {
     }
   };
 
-  path.commands.forEach((item) => {
-    if (item.type === "M") {
-      x = tf(item.x);
-      y = tf(item.y);
-      penup();
-      gcode.push(`G1 X${x} Y${y}`);
-    } else if (item.type === "L") {
-      x = tf(item.x);
-      y = tf(item.y);
-      if (!firstMove) firstMove = { x, y };
-      pendown();
-      gcode.push(`G1 X${x} Y${y}`);
-    } else if (item.type === "C") {
-      const p1 = { x, y };
-      if (!firstMove) firstMove = { x, y };
-      const p2 = { x: tf(item.x1), y: tf(item.y1) };
-      const p3 = { x: tf(item.x2), y: tf(item.y2) };
-      const p4 = { x: tf(item.x), y: tf(item.y) };
-      let tracer = new CubicBezier({ p1, p2, p3, p4 });
-      let coords1 = tracer.trace({ step: 0.1 });
-      for (let i = 0; i < coords1.length; i += 2) {
-        x = coords1[i];
-        y = coords1[i + 1];
+  paths.forEach((path) => {
+    path.commands.forEach((item) => {
+      if (item.type === "M") {
+        x = tf(item.x);
+        y = tf(item.y);
+        penup();
+        gcode.push(`G1 X${x} Y${y}`);
+      } else if (item.type === "L") {
+        x = tf(item.x);
+        y = tf(item.y);
+        if (!firstMove) firstMove = { x, y };
         pendown();
         gcode.push(`G1 X${x} Y${y}`);
+      } else if (item.type === "C") {
+        const p1 = { x, y };
+        if (!firstMove) firstMove = { x, y };
+        const p2 = { x: tf(item.x1), y: tf(item.y1) };
+        const p3 = { x: tf(item.x2), y: tf(item.y2) };
+        const p4 = { x: tf(item.x), y: tf(item.y) };
+        let tracer = new CubicBezier({ p1, p2, p3, p4 });
+        let coords1 = tracer.trace({ step: 0.1 });
+        for (let i = 0; i < coords1.length; i += 2) {
+          x = coords1[i];
+          y = coords1[i + 1];
+          pendown();
+          gcode.push(`G1 X${x} Y${y}`);
+        }
+        x = p3.x;
+        y = p3.y;
+      } else if (item.type === "Q") {
+        const p1 = { x, y };
+        if (!firstMove) firstMove = { x, y };
+        const p2 = { x: tf(item.x1), y: tf(item.y1) };
+        const p3 = { x: tf(item.x), y: tf(item.y) };
+        let tracer = new QuadricBezier({ p1, p2, p3 });
+        let coords1 = tracer.trace({ step: 0.1 });
+        for (let i = 0; i < coords1.length; i += 2) {
+          x = coords1[i];
+          y = coords1[i + 1];
+          pendown();
+          gcode.push(`G1 X${x} Y${y}`);
+        }
+        x = p3.x;
+        y = p3.y;
+      } else if (item.type === "Z") {
+        gcode.push(`G1 X${firstMove.x} Y${firstMove.y}`);
+        firstMove = null;
+        penup();
       }
-      x = p3.x;
-      y = p3.y;
-    } else if (item.type === "Q") {
-      const p1 = { x, y };
-      if (!firstMove) firstMove = { x, y };
-      const p2 = { x: tf(item.x1), y: tf(item.y1) };
-      const p3 = { x: tf(item.x), y: tf(item.y) };
-      let tracer = new QuadricBezier({ p1, p2, p3 });
-      let coords1 = tracer.trace({ step: 0.1 });
-      for (let i = 0; i < coords1.length; i += 2) {
-        x = coords1[i];
-        y = coords1[i + 1];
-        pendown();
-        gcode.push(`G1 X${x} Y${y}`);
-      }
-      x = p3.x;
-      y = p3.y;
-    } else if (item.type === "Z") {
-      gcode.push(`G1 X${firstMove.x} Y${firstMove.y}`);
-      firstMove = null;
-      penup();
-    }
+    });
   });
 
   penup();

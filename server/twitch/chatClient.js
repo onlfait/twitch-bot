@@ -18,7 +18,8 @@ class ChatClientWrapper {
 
       const payload = { channel, user, message, msg, client, io };
 
-      msg.isBroadcaster = msg._tags.get("badges").includes("broadcaster");
+      const badges = msg._tags.get("badges");
+      msg.isBroadcaster = badges && badges.includes("broadcaster");
 
       let commandCatch = false;
       let done = () => (commandCatch = true);
